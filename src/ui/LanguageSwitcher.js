@@ -4,8 +4,25 @@ import i18n from '../i18n/i18n.js';
 export class LanguageSwitcher {
   constructor() {
     this.currentLang = i18n.language || 'zh-CN';
+    
+    // 等待DOM加载完成后再创建UI (Wait for DOM to load before creating UI)
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.initialize();
+      });
+    } else {
+      this.initialize();
+    }
+  }
+
+  // 初始化 (Initialize)
+  initialize() {
     this.createUI();
     this.setupEventListeners();
+    // 首次更新所有文本 (First time update all text)
+    setTimeout(() => {
+      this.updateAllText();
+    }, 100);
   }
 
   // 创建语言切换器UI (Create Language Switcher UI)
@@ -128,7 +145,10 @@ export class LanguageSwitcher {
 
   // 更新提示文本 (Update hints)
   updateHints() {
-    // 提示文本会在动画循环中更新 (Hints will be updated in animation loop)
+    // 更新全局hints数组 (Update global hints array)
+    if (window.updateHintsFromi18n) {
+      window.updateHintsFromi18n();
+    }
   }
 
   // 更新内容 (Update content)

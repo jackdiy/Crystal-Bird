@@ -21,4 +21,9 @@ i18next
     }
   });
 
+// 将i18next实例暴露到全局以供HTML使用 (Expose i18next instance globally for HTML use)
+if (typeof window !== 'undefined') {
+  window.i18nextInstance = i18next;
+}
+
 export default i18next;
