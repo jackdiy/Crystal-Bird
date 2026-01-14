@@ -93,6 +93,7 @@ export class GestureManager {
       // 初始化MediaPipe Hands (Initialize MediaPipe Hands)
       this.hands = new Hands({
         locateFile: (file) => {
+          // 使用CDN加载MediaPipe文件，添加错误处理 (Load MediaPipe files from CDN with error handling)
           return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
         }
       });
@@ -109,15 +110,20 @@ export class GestureManager {
       this.hands.onResults((results) => this.onResults(results));
       
       // 初始化相机 (Initialize camera)
-      this.camera = new Camera(this.videoElement, {
-        onFrame: async () => {
-          await this.hands.send({ image: this.videoElement });
-        },
-        width: 640,
-        height: 480
-      });
-      
-      await this.camera.start();
+      try {
+        this.camera = new Camera(this.videoElement, {
+          onFrame: async () => {
+            await this.hands.send({ image: this.videoElement });
+          },
+          width: 640,
+          height: 480
+        });
+        
+        await this.camera.start();
+      } catch (cameraError) {
+        console.error('相机初始化失败 (Camera initialization failed):', cameraError);
+        throw new Error(i18n.t('gesture.notSupported'));
+      }
       
       // 更新UI状态 (Update UI state)
       this.enabled = true;

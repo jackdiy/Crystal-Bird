@@ -212,22 +212,13 @@ export class ColorSchemeManager {
     const duration = 1.5;
     
     // 更新背景色 (Update background color)
-    const currentBgColor = new THREE.Color(
-      getComputedStyle(document.body).backgroundColor || scheme.background
-    );
+    // 直接使用scheme中的颜色而不是从DOM获取 (Use color from scheme directly instead of from DOM)
+    const currentBgColor = new THREE.Color(scheme.background);
     const targetBgColor = new THREE.Color(scheme.background);
     
-    gsap.to(currentBgColor, {
-      r: targetBgColor.r,
-      g: targetBgColor.g,
-      b: targetBgColor.b,
-      duration: duration,
-      ease: 'power2.inOut',
-      onUpdate: () => {
-        document.body.style.background = `rgb(${currentBgColor.r * 255}, ${currentBgColor.g * 255}, ${currentBgColor.b * 255})`;
-        document.querySelector('html').style.background = `rgb(${currentBgColor.r * 255}, ${currentBgColor.g * 255}, ${currentBgColor.b * 255})`;
-      }
-    });
+    // 应用背景色 (Apply background color)
+    document.body.style.background = scheme.background;
+    document.querySelector('html').style.background = scheme.background;
     
     // 更新shader材质颜色 (Update shader material colors)
     if (this.shaderMaterialManager && this.shaderMaterialManager.material) {

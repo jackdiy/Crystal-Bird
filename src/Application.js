@@ -26,6 +26,12 @@ export class Application {
     this.lastTime = 0;
     this.isStarted = false;
     this.slowmoEffect = null;
+    
+    // 新功能管理器 (New feature managers)
+    this.languageSwitcher = null;
+    this.gestureManager = null;
+    this.avatarManager = null;
+    this.colorSchemeManager = null;
 
     this.init();
   }
@@ -92,6 +98,30 @@ export class Application {
     this.setupResizeHandler();
 
     this.startPreRendering();
+  }
+
+  // 清理资源 (Cleanup resources)
+  destroy() {
+    // 清理新功能管理器 (Cleanup new feature managers)
+    if (this.gestureManager) {
+      this.gestureManager.destroy();
+      this.gestureManager = null;
+    }
+    
+    if (this.avatarManager) {
+      this.avatarManager.destroy();
+      this.avatarManager = null;
+    }
+    
+    if (this.colorSchemeManager) {
+      this.colorSchemeManager.destroy();
+      this.colorSchemeManager = null;
+    }
+    
+    // 清理其他资源 (Cleanup other resources)
+    if (this.sceneManager) {
+      this.sceneManager.destroy();
+    }
   }
 
   initializeAllSystems() {

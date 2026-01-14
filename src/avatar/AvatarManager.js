@@ -269,14 +269,23 @@ export class AvatarManager {
     
     // 获取当前纹理 (Get current texture)
     const texture = this.getCurrentTexture();
-    if (!texture) return;
+    if (!texture || !texture.image) return;
     
     // 重新创建头像 (Recreate avatar)
     const img = new Image();
     img.onload = () => {
       this.createAvatarFromImage(img);
     };
-    img.src = texture.image.src;
+    img.onerror = () => {
+      console.error('图片加载失败 (Image loading failed)');
+    };
+    
+    // 检查是否可以转换为dataURL (Check if can convert to dataURL)
+    try {
+      img.src = texture.image.src;
+    } catch (error) {
+      console.error('无法访问图片源 (Cannot access image source):', error);
+    }
   }
 
   // 获取当前纹理 (Get current texture)

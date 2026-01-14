@@ -19,10 +19,14 @@ export class LanguageSwitcher {
   initialize() {
     this.createUI();
     this.setupEventListeners();
-    // 首次更新所有文本 (First time update all text)
-    setTimeout(() => {
+    // 确保i18n已初始化后再更新文本 (Ensure i18n is initialized before updating text)
+    if (i18n.isInitialized) {
       this.updateAllText();
-    }, 100);
+    } else {
+      i18n.on('initialized', () => {
+        this.updateAllText();
+      });
+    }
   }
 
   // 创建语言切换器UI (Create Language Switcher UI)
