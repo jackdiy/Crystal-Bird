@@ -12,6 +12,12 @@ import { GUIManager } from './gui/GUIManager.js';
 import { PerformanceMonitor } from './debug/PerformanceMonitor.js';
 import { AudioManager } from './managers/AudioManager.js';
 import { SlowmoEffect } from './effects/SlowmoEffect.js';
+// 导入新的功能模块 (Import new feature modules)
+import i18n from './i18n/i18n.js';
+import { LanguageSwitcher } from './ui/LanguageSwitcher.js';
+import { GestureManager } from './gesture/GestureManager.js';
+import { AvatarManager } from './avatar/AvatarManager.js';
+import { ColorSchemeManager } from './theme/ColorSchemeManager.js';
 
 export class Application {
   constructor() {
@@ -20,11 +26,20 @@ export class Application {
     this.lastTime = 0;
     this.isStarted = false;
     this.slowmoEffect = null;
+    
+    // 新功能管理器 (New feature managers)
+    this.languageSwitcher = null;
+    this.gestureManager = null;
+    this.avatarManager = null;
+    this.colorSchemeManager = null;
 
     this.init();
   }
 
   init() {
+    // 初始化i18n (Initialize i18n)
+    this.languageSwitcher = new LanguageSwitcher();
+    
     this.sceneManager = new SceneManager(this.canvas);
     this.mouseManager = new MouseManager();
     this.shaderMaterialManager = new ShaderMaterialManager();
@@ -75,9 +90,38 @@ export class Application {
     this.guiManager.addTreeControls(this.crystallineBranches);
     this.guiManager.addCloudControls(this.cloudBackground);
 
+    // 初始化新功能 (Initialize new features)
+    this.gestureManager = new GestureManager(this.sceneManager);
+    this.avatarManager = new AvatarManager(this.sceneManager.scene, this.sceneManager);
+    this.colorSchemeManager = new ColorSchemeManager(this.shaderMaterialManager, this.postProcessing);
+
     this.setupResizeHandler();
 
     this.startPreRendering();
+  }
+
+  // 清理资源 (Cleanup resources)
+  destroy() {
+    // 清理新功能管理器 (Cleanup new feature managers)
+    if (this.gestureManager) {
+      this.gestureManager.destroy();
+      this.gestureManager = null;
+    }
+    
+    if (this.avatarManager) {
+      this.avatarManager.destroy();
+      this.avatarManager = null;
+    }
+    
+    if (this.colorSchemeManager) {
+      this.colorSchemeManager.destroy();
+      this.colorSchemeManager = null;
+    }
+    
+    // 清理其他资源 (Cleanup other resources)
+    if (this.sceneManager) {
+      this.sceneManager.destroy();
+    }
   }
 
   initializeAllSystems() {
@@ -137,6 +181,11 @@ export class Application {
     const flowfieldSystem = this.modelLoader.getFlowfieldSystem();
     if (flowfieldSystem) {
       flowfieldSystem.update(scaledDelta, elapsedTime);
+    }
+
+    // 更新自定义头像 (Update custom avatar)
+    if (this.avatarManager) {
+      this.avatarManager.update(elapsedTime);
     }
 
     this.postProcessing.render();
